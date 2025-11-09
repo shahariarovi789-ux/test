@@ -21,8 +21,19 @@ void print_usage(const string& prog) {
 bool parse_numbers_from_file(const string& path, vector<double>& out) {
     ifstream in(path);
     if (!in) return false;
-    double x;
-    while (in >> x) out.push_back(x);
+
+    string token;
+    while (in >> token) {
+        try {
+            size_t parsed = 0;
+            double value = stod(token, &parsed);
+            if (parsed != token.size()) throw invalid_argument("trailing characters");
+            out.push_back(value);
+        } catch (const exception&) {
+            cerr << "warning: skipped non-numeric value '" << token << "' in file '" << path
+                 << "'\n";
+        }
+    }
     return true;
 }
 
